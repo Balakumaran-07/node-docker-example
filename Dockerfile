@@ -1,15 +1,16 @@
-FROM node:12.2
+FROM node:14-slim
 
-ENV HOME=/home/app
+WORKDIR /usr/src/app
 
-RUN apt-get update && apt-get install htop
+COPY package.json ./
 
-COPY package.json package-lock.json $HOME/node_docker/
+# Add the source code to app
+COPY ./ /usr/local/app/
 
-WORKDIR $HOME/node_docker
+RUN npm install
+#RUN npm ci --only=production
 
-RUN npm install --silent --progress=false
+COPY . .
+RUN npm run compile
+CMD npm run start
 
-COPY . $HOME/node_docker
-
-CMD ["npm", "start"]
